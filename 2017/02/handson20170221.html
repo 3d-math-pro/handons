@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <title>Three.js ハンズオン</title>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.js"></script>
+<script>
+	// シーン　オブジェクトを追加する舞台
+	const scene = new THREE.Scene();
+	// レンダラー　映像をcanvas上に出力する
+	const renderer = new THREE.WebGLRenderer();
+    // canvasをウィンドウのサイズにセットする
+	renderer.setSize(window.innerWidth, window.innerHeight);
+    // canvasをbodyに追加
+	document.body.appendChild(renderer.domElement);
+	// カメラ　シーンを撮影する
+	// THREE.PerspectiveCamera(fov[画角], aspect[アスペクト], near[ニアークリップ], far[ファークリップ]);
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    // カメラの位置を移動
+	camera.position.z = 600;
+
+    // ジオメトリ　形状の情報を持つ
+    // 球のジオメトリを作成
+	const geometry = new THREE.SphereGeometry(200, 32, 32);
+    // マテリアル　色の情報を持つ
+    // 今回は金属のような質感のマテリアルを作成
+	const material = new THREE.MeshStandardMaterial({
+		color: new THREE.Color( 0.913, 0.921, 0.925 ),
+		roughness: 0,
+		metalness: 0.3,
+	});
+    
+    // メッシュ　シーンに追加するオブジェクト　ジオメトリとマテリアルからなる
+    const mesh = new THREE.Mesh(geometry, material);
+
+    // メッシュをシーンに追加
+    scene.add(mesh);
+
+    // ライト　光源になる
+	const light = new THREE.PointLight(0xffffff);
+    // ライトの位置を移動
+	light.position.x = 250;
+	light.position.y = 250;
+	light.position.z = 250;
+
+    // ライトをシーンに追加
+	scene.add(light);
+
+	let count = 0;
+
+    // ループ処理
+	function animate () {
+		requestAnimationFrame(animate);
+
+		count += 0.05;
+        // メッシュを円運動させる
+		mesh.position.x = Math.cos(count) * 100;
+		mesh.position.y = Math.sin(count) * 100;
+
+        // レンダリング
+		renderer.render(scene, camera);
+	}
+
+	animate();
+
+</script>
+</body>
+</html>
