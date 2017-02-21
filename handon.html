@@ -23,13 +23,16 @@
 
   const geometry = new THREE.SphereGeometry(200, 32, 32);
     // 形状の情報 (PlaneGeometry: 長方形)
-  const material = new THREE.MeshPhongMaterial({
-      color: 0xff00ff
+  const material = new THREE.MeshStandardMaterial({
+      color: 0xff00ff,
+      roughness: 0,
+      metalness: 0.5
     });
 
   const light = new THREE.PointLight(0xffffff);
   light.position.y = 250;
-  light.position.z = 50;
+  light.position.y = 250;
+  light.position.z = 250;
   scene.add(light);
 
   const light2 = new THREE.PointLight(0xffffff);
