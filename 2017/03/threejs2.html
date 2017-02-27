@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8" />
+        <title>Three.js Handson 2</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.js"></script>
+        <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+        <script>
+            class Sakura {
+                constructor() {}
+
+                init() {
+                    this.scene = new THREE.Scene();
+                    this.renderer = new THREE.WebGLRenderer();
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                    this.renderer.setClearColor(0xffffff);
+                    this.renderer.setPixelRatio(window.devicePixelRatio);
+                    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+
+                    this.camera.position.y = 200;
+                    this.camera.position.z = 500;
+
+                    this.canvas = this.renderer.domElement;
+
+                    this.controls = new THREE.OrbitControls(this.camera);
+
+                    document.body.appendChild(this.canvas);
+
+                    // 紙吹雪のジオメトリとマテリアルを用意
+                    const geometry = new THREE.PlaneGeometry(10, 10);
+                    const material = new THREE.MeshPhongMaterial({
+                        color: 0xfef4f4,
+                        shininess: 0.5,
+                        specular: 0xffffff,
+                        side: THREE.DoubleSide
+                    });
+
+                    // 紙吹雪の枚数
+                    const leaves = 5000;
+
+                    // 紙吹雪の保存場所
+                    const store = [];
+
+                    for(let i = 0; i < leaves; i++){
+                        // メッシュを作成
+                        const mesh = new THREE.Mesh(geometry, material);
+                        // メッシュの回転をランダムにセット
+                        mesh.rotation.set(Math.random(), Math.random(), Math.random());
+                        // メッシュの回転の加速度をランダムに決定
+                        mesh.rotation.dx = Math.random() * 0.1;
+                        mesh.rotation.dy = Math.random() * 0.1;
+                        mesh.rotation.dz = Math.random() * 0.1;
+
+                        // メッシュの位置をランダムに決定
+                        mesh.position.set(Math.random() * 800 - 400, Math.random() * 1000, Math.random() * 500);
+                        // メッシュの移動の加速度をランダムに決定
+                        mesh.position.dx = Math.random() - 0.5;
+                        mesh.position.dz = Math.random() - 0.5;
+
+                        // シーンとstoreに追加
+                        store.push(mesh);
+                        this.scene.add(mesh);
+                    }
+
+                    // HemisphereLightという特殊なライトを使用します
+                    const light = new THREE.HemisphereLight(0xff99ad, 0xfef4f4);
+
+                    light.position.y = 1050;
+
+                    this.scene.add(light);
+
+                    const _this = this;
+
+                    (function animate() {
+                        requestAnimationFrame(animate);
+                        _this.controls.update();
+                        for(let i = 0; i < leaves; i++) {
+                            // 紙吹雪一枚一枚に対し予め決定しておいた回転量と移動量を加える
+                            const s = store[i];
+                            s.rotation.x += s.rotation.dx;
+                            s.rotation.y += s.rotation.dy;
+                            s.rotation.z += s.rotation.dz;
+
+                            s.position.x += s.position.dx;
+                            s.position.y -= 2;
+                            s.position.z += s.position.dz;
+
+                            // 描写範囲外へ行った紙吹雪を画面内に戻す
+                            if(s.position.x > 1000 || s.position.x < -1000) s.position.x = -s.position.x;
+                            if(s.position.y < -500) s.position.y += 1000;
+                            if(s.position.z > 5000 || s.position.z < 0) s.position.z = 1;
+                        }
+                        _this.renderer.render(_this.scene, _this.camera);
+                    }());
+                }
+            }
+
+            new Sakura().init();
+        </script>
+    </body>
+</html>
